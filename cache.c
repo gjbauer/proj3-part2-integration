@@ -117,7 +117,7 @@ void cache_fsync(DiskInterface* disk, cache *cache, uint64_t inum)
 			int index = pci_lookup(cache->pci, list->block_number);
 			
 			// Write the dirty block back to disk
-			memcpy(disk_get_block(disk, cache->cache[index].block_number), cache->cache[index].page_data, BLOCK_SIZE);
+			disk_write_block(disk, cache->cache[index].block_number, cache->cache[index].page_data);
 			
 			// Mark as clean since it's now synced with disk
 			cache->cache[index].dirty_bit=false;
@@ -144,7 +144,7 @@ void cache_sync(DiskInterface* disk, cache *cache)
 		block_type_t *block_type = (block_type_t*)cache->cache[index].page_data;
 		
 		// Write dirty block back to disk
-		memcpy(disk_get_block(disk, cache->cache[index].block_number), cache->cache[index].page_data, BLOCK_SIZE);
+		disk_write_block(disk, cache->cache[index].block_number, cache->cache[index].page_data);
 		
 		// Move to next entry before removing current one
 		curr=curr->next;
