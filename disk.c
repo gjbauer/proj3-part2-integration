@@ -127,6 +127,10 @@ alloc_page(DiskInterface* disk, cache *cache)
 			#ifndef CACHE_DISABLED
 			int index = pci_lookup(cache->pci, 0);
 			cache->cache[index].dirty_bit=true;
+			
+			// Add to global dirty list for sync operations
+			cache->gdl = gdl_push(cache, index);
+			cache->cache[index].gdl_pos = cache->gdl;
 			#endif
 			printf("+ alloc_page() -> %d\n", ii);
 			return ii;
@@ -150,6 +154,10 @@ free_page(DiskInterface* disk, cache *cache, int pnum)
 	void* pbm = get_block(disk, cache, 0, 0);	// TODO: Change the block bitmap numbers later after integration with superblock/direntries/inodes
 	int index = pci_lookup(cache->pci, 0);
 	cache->cache[index].dirty_bit=true;
+	
+	// Add to global dirty list for sync operations
+	cache->gdl = gdl_push(cache, index);
+	cache->cache[index].gdl_pos = cache->gdl;
 	#endif
 	bitmap_put(pbm, pnum, 0);  // Mark block as free
 }

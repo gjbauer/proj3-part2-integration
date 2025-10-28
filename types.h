@@ -1,5 +1,5 @@
-#ifndef DISK_T_H
-#define DISK_T_H
+#ifndef TYPES_H
+#define TYPES_H
 
 #include "pci.h"
 #include "fl.h"
