@@ -4,7 +4,7 @@
 #include <sys/param.h>
 #include <bsd/stdlib.h>
 #include "disk.h"
-#include "disk_t.h"
+#include "types.h"
 #include "cache.h"
 
 void*
@@ -25,7 +25,7 @@ get_block(DiskInterface* disk, cache *cache, uint64_t inum, uint64_t pnum)
 			{
 				block_type_t *block_type = (block_type_t*)cache->cache[cache_index].page_data;
 				// Write dirty data back to disk
-				memcpy(disk_get_block(disk, cache->cache[cache_index].block_number), cache->cache[cache_index].page_data, BLOCK_SIZE);
+				disk_write_block(disk, cache->cache[cache_index].block_number, cache->cache[cache_index].page_data);
 				free(cache->cache[cache_index].page_data);
 				// Remove from dirty list if it's a data block
 				if (block_type==BLOCK_TYPE_DATA) dl_remove_block(cache->dirty_list, cache->cache[cache_index].inode_number, cache->cache[cache_index].block_number);
@@ -51,7 +51,7 @@ get_block(DiskInterface* disk, cache *cache, uint64_t inum, uint64_t pnum)
 		
 		// Load block data from disk into cache
 		printf("Copying page %lu into the cache!\n", pnum);
-		memcpy(cache->cache[index].page_data, disk_get_block(disk, pnum), BLOCK_SIZE);
+		disk_read_block(disk, pnum, cache->cache[index].page_data);
 		
 		// Add to LRU list (most recently used)
 		cache->cache[index].lru_pos = lru_push(cache, index);
