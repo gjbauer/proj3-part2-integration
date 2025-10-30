@@ -18,7 +18,7 @@ GDL *gdl_push(cache *cache, int index)
 		node->next = list;
 		node->prev = list->prev;
 		list->prev = node;
-		node->prev->next = node;
+		if (node->prev) node->prev->next = node;
 	}
 	else
 	{

@@ -20,6 +20,8 @@ typedef struct DiskInterface {
     bool is_mounted;                 // Whether filesystem is mounted
 } DiskInterface;
 
+// =================== Cache Structures ===================
+
 /**
  * Represents a single cache entry containing a disk block
  */

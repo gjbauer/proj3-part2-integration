@@ -18,6 +18,8 @@
 typedef struct BTreeNode {
     uint64_t block_number;		// Physical block number on disk where this node is stored
     bool is_leaf;			// Whether this is a leaf node (contains actual data)
+    uint64_t key;			// Actual key of node (used when node is leaf)
+    uint64_t value;			// Associated value for key-value pairs (B+Tree indexes file and directory inodes)
     uint16_t num_keys;			// Current number of keys stored in this node
     uint64_t keys[MAX_KEYS];		// Array of keys (could be inode numbers or other identifiers)
     uint64_t children[MAX_KEYS + 1];	// Array of child block numbers (internal nodes only)
@@ -25,12 +27,6 @@ typedef struct BTreeNode {
     uint64_t left_sibling;		// Block number of left sibling (for efficient traversal)
     uint64_t right_sibling;		// Block number of right sibling (for efficient traversal)
 } BTreeNode;
-
-typedef struct KeyValuePair
-{
-	int key;
-	int value;
-} KeyValuePair;
 
 // ==================== B-TREE OPERATIONS ====================
 
@@ -58,7 +54,7 @@ void btree_node_free(DiskInterface* disk, cache *cache, BTreeNode* node);
  * @param node Pointer to node structure to populate
  * @return 0 on success, -1 on failure
  */
-int btree_node_read(DiskInterface* disk, uint64_t block_num, BTreeNode* node);
+int btree_node_read(DiskInterface* disk, cache *cache, uint64_t block_num, BTreeNode* node);
 
 /**
  * Write a B-tree node from memory to disk
@@ -66,7 +62,7 @@ int btree_node_read(DiskInterface* disk, uint64_t block_num, BTreeNode* node);
  * @param node Pointer to node to write
  * @return 0 on success, -1 on failure
  */
-int btree_node_write(DiskInterface* disk, BTreeNode* node);
+int btree_node_write(DiskInterface* disk, cache *cache, BTreeNode* node);
 
 // ==================== CORE B-TREE OPERATIONS ====================
 
@@ -77,7 +73,7 @@ int btree_node_write(DiskInterface* disk, BTreeNode* node);
  * @param key Key to search for
  * @return Block number containing the key, or -1 if not found
  */
-uint64_t btree_search(DiskInterface* disk, uint64_t root_block, uint64_t key);
+uint64_t btree_search(DiskInterface* disk, cache *cache, uint64_t root_block, uint64_t key);
 
 /**
  * Insert a key into the B-tree
@@ -86,7 +82,7 @@ uint64_t btree_search(DiskInterface* disk, uint64_t root_block, uint64_t key);
  * @param key Key to insert
  * @return 0 on success, -1 on failure
  */
-int btree_insert(DiskInterface* disk, uint64_t root_block, uint64_t key, uint64_t value);
+int btree_insert(DiskInterface* disk, cache *cache, uint64_t root_block, uint64_t key, uint64_t value);
 
 /**
  * Delete a key from the B-tree
@@ -95,7 +91,7 @@ int btree_insert(DiskInterface* disk, uint64_t root_block, uint64_t key, uint64_
  * @param key Key to delete
  * @return Block number of deleted node, or -1 if key not found
  */
-int btree_delete(DiskInterface* disk, uint64_t root_block, uint64_t key);
+int btree_delete(DiskInterface* disk, cache *cache, uint64_t root_block, uint64_t key);
 
 // ==================== INTERNAL OPERATIONS ====================
 
@@ -105,7 +101,7 @@ int btree_delete(DiskInterface* disk, uint64_t root_block, uint64_t key);
  * @param disk Pointer to DiskInterface
  * @param root Pointer to root node to split
  */
-void btree_split_root(DiskInterface* disk, BTreeNode* root);
+void btree_split_root(DiskInterface* disk, cache *cache, BTreeNode* root);
 
 /**
  * Split a full child node
@@ -114,7 +110,7 @@ void btree_split_root(DiskInterface* disk, BTreeNode* root);
  * @param index Index of child to split
  * @param child Pointer to child node to split
  */
-void btree_split_child(DiskInterface* disk, BTreeNode* node, int index, BTreeNode* child);
+void btree_split_child(DiskInterface* disk, cache *cache, BTreeNode* node, int index, BTreeNode* child);
 
 /**
  * Merge two adjacent child nodes when they become too small
@@ -122,7 +118,7 @@ void btree_split_child(DiskInterface* disk, BTreeNode* node, int index, BTreeNod
  * @param parent Pointer to parent node
  * @param index Index of first child to merge
  */
-void btree_merge_children(DiskInterface* disk, BTreeNode* parent, int index);
+void btree_merge_children(DiskInterface* disk, cache *cache, BTreeNode* parent, int index);
 
 // ==================== DEBUGGING ====================
 
@@ -132,7 +128,7 @@ void btree_merge_children(DiskInterface* disk, BTreeNode* parent, int index);
  * @param root_block Block number of root node
  * @param level Current indentation level for pretty printing
  */
-void btree_print(DiskInterface* disk, uint64_t root_block, int level);
+void btree_print(DiskInterface* disk, cache *cache, uint64_t root_block, int level);
 
 #endif
 
