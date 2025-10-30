@@ -23,15 +23,15 @@ int main()
 				scanf("%d", &key);
 				printf("Value to insert: ");
 				scanf("%d", &value);
-				btree_insert(disk, cache,root->block_number, key, value);
+				btree_insert(disk, cache, root->block_number, key, value);
 				break;
 			case 2:
 				printf("Key to search: ");
 				scanf("%d", &key);
-				btree_search(disk, cache,root->block_number, key);
+				btree_search(disk, cache, root->block_number, key);
 				break;
 			case 3:
-				btree_print(disk, cache,root->block_number, 1);
+				btree_print(disk, cache, root->block_number, 1);
 				break;
 			case 4:
 				printf("Key to delete: ");

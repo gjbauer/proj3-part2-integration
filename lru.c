@@ -12,6 +12,7 @@ LRU_List *lru_push(cache *cache, int index)
 	LRU_List *node = (LRU_List*)malloc(sizeof(struct LRU_List));
 	node->index = index;
 	
+	printf("cache->lru_size=%lu\n", cache->lru_size);
 	if (cache->lru_size>0 && list != NULL)
 	{
 		// Insert into existing circular doubly-linked list

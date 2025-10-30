@@ -722,30 +722,31 @@ void btree_merge_children(DiskInterface* disk, cache *cache, BTreeNode* parent, 
  */
 void btree_print(DiskInterface* disk, cache *cache, uint64_t root_block, int level)
 {
-	BTreeNode *node = (BTreeNode*)get_block(disk, cache, 0, root_block);
+	BTreeNode node;
+	btree_node_read(disk, cache, root_block, &node);
 	printf("%*sBlock %lu: ", level*2, "", root_block);  // Indent based on level
 	
-	if (node->is_leaf) {
+	if (node.is_leaf) {
 		// Print leaf node information
-		printf("LEAF key=%lu parent=%lu\n", node->key, node->parent);
+		printf("LEAF key=%lu parent=%lu\n", node.key, node.parent);
 	} else {
 		// Print internal node information
 		printf("INTERNAL keys=[");
-		for(int i = 0; i < node->num_keys; i++) {
-			printf("%lu", node->keys[i]);
-			if (i < node->num_keys-1) printf(",");
+		for(int i = 0; i < node.num_keys; i++) {
+			printf("%lu", node.keys[i]);
+			if (i < node.num_keys-1) printf(",");
 		}
 		printf("] children=[");
-		for(int i = 0; i <= node->num_keys; i++) {
-			printf("%lu", node->children[i]);
-			if (i < node->num_keys) printf(",");
+		for(int i = 0; i <= node.num_keys; i++) {
+			printf("%lu", node.children[i]);
+			if (i < node.num_keys) printf(",");
 		}
 		printf("]\n");
 		
 		// Recursively print all children with increased indentation
-		for(int i = 0; i <= node->num_keys; i++) {
-			if (node->children[i] != 0) {
-				btree_print(disk, cache, node->children[i], level+1);
+		for(int i = 0; i <= node.num_keys; i++) {
+			if (node.children[i] != 0) {
+				btree_print(disk, cache, node.children[i], level+1);
 			}
 		}
 	}
