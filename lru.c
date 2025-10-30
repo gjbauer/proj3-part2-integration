@@ -18,7 +18,7 @@ LRU_List *lru_push(cache *cache, int index)
 		node->next = list;
 		node->prev = list->prev;
 		list->prev = node;
-		node->prev->next = node;
+		if (node->prev) node->prev->next = node;
 	}
 	else
 	{
@@ -39,7 +39,7 @@ int64_t lru_pop(cache *cache, LRU_List *list)
 	// Get index of LRU item (tail of circular list)
 	int index = (list->prev) ? (list->prev->index) : (index = list->index);
 	
-	if (cache->lru_size>0)
+	if (cache->lru_size>1)
 	{
 		// Remove tail node from circular list
 		LRU_List *temp = list->prev;

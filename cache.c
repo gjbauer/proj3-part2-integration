@@ -65,9 +65,9 @@ get_block(DiskInterface* disk, cache *cache, uint64_t inum, uint64_t pnum)
 		LRU_List *ptr = cache->cache[rv].lru_pos->next;
 		int index;
 		// Move to front of LRU list (mark as most recently used)
-		if (ptr) index = lru_pop(cache, ptr);
+		if (cache->lru_size>1) index = lru_pop(cache, ptr);
 		else index = lru_pop(cache, cache->cache[rv].lru_pos);
-		cache->cache[index].lru_pos = lru_push(cache, index);
+		cache->cache[rv].lru_pos = lru_push(cache, rv);
 		return cache->cache[rv].page_data;
 	}
 }
@@ -185,6 +185,7 @@ cache* alloc_cache()
 	for (int i=0; i<cache->cache_size; i++)
 	{
 		cache->cache[i].page_data=NULL;
+		cache->cache[i].lru_pos=NULL;
 	}
 	// Initialize all entries as clean
 	for (int i=0; i<cache_size; i++)
