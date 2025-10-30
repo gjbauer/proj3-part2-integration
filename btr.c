@@ -16,9 +16,10 @@ BTreeNode* btree_node_create(DiskInterface* disk, cache *cache, bool is_leaf)
 	int page = alloc_page(disk, cache);
 	
 	// Get pointer to the allocated block
-	block_type_t *block_type = (block_type_t*)get_block(disk, cache, 0, page);
+	void *ptr = get_block(disk, cache, 0, page);
+	block_type_t *block_type = (block_type_t*)ptr;
 	block_type = (block_type_t*) BLOCK_TYPE_BTREE_NODE;
-	BTreeNode *node = (BTreeNode*)( (block_type_t*) (block_type + 1) );
+	BTreeNode *node = (BTreeNode*)( (block_type_t*) (ptr + 1) );
 	
 	// Initialize node metadata
 	node->block_number = page;

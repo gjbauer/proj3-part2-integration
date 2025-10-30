@@ -9,16 +9,16 @@ LRU_List *lru_push(cache *cache, int index)
 {
 	LRU_List *list = cache->lru;
 	// Allocate new node
-	LRU_List *node = (LRU_List*)malloc(sizeof(LRU_List));
+	LRU_List *node = (LRU_List*)malloc(sizeof(struct LRU_List));
 	node->index = index;
 	
-	if (cache->lru_size>0)
+	if (cache->lru_size>0 && list != NULL)
 	{
 		// Insert into existing circular doubly-linked list
 		node->next = list;
 		node->prev = list->prev;
 		list->prev = node;
-		if (node->prev) node->prev->next = node;
+		node->prev->next = node;
 	}
 	else
 	{
@@ -43,11 +43,9 @@ int64_t lru_pop(cache *cache, LRU_List *list)
 	{
 		// Remove tail node from circular list
 		LRU_List *temp = list->prev;
-		if (list->next!=list)
-		{
-			// More than one node - update circular links
-			list->prev = list->prev->prev;
-		}
+		
+		list->prev = list->prev->prev;
+		list->prev->next = list;
 		
 		// Securely overwrite node data before freeing
 		arc4random_buf(temp, sizeof(struct LRU_List));
@@ -56,6 +54,7 @@ int64_t lru_pop(cache *cache, LRU_List *list)
 	else
 	{
 		// Last node in list
+		cache->lru = NULL;
 		arc4random_buf(list, sizeof(struct LRU_List));
 		free(list);
 	}
