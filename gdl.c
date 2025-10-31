@@ -41,6 +41,7 @@ void gdl_pop(cache *cache, GDL *list)
 	// Update neighboring nodes to bypass this node
 	if (list->prev) list->prev->next = list->next;
 	if (list->next) list->next->prev = list->prev;
+	cache->gdl = list->next;
 	
 	// Securely overwrite node data before freeing
 	arc4random_buf(temp, sizeof(struct GDL));
