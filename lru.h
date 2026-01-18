@@ -1,5 +1,6 @@
 #ifndef LRU_H
 #define LRU_H
+#include <stdint.h>
 
 typedef struct LRU_List
 {

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __linux__
 #include <bsd/stdlib.h>
+#endif
 #include "dl.h"
 
 // Add a block number to a dirty list

@@ -2,7 +2,9 @@
 #include <string.h>
 #include <sys/sysinfo.h>
 #include <sys/param.h>
+#ifdef __linux__
 #include <bsd/stdlib.h>
+#endif
 #include "disk.h"
 #include "types.h"
 #include "cache.h"
