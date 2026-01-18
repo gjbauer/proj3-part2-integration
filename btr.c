@@ -212,11 +212,12 @@ int btree_insert_nonfull(DiskInterface* disk, cache *cache, BTreeNode *root, BTr
 		int child_pos = 0;
 		for(int j = 0; j <= root->num_keys; j++) {
 			if(root->children[j] != 0) {
-				BTreeNode *child = (BTreeNode*)get_block(disk, cache, 0, root->children[j]);
-				if(child->is_leaf && child->key < node->key) {
+				BTreeNode child;
+				btree_node_read(disk, cache, root->children[j], &child);
+				if(child.is_leaf && child.key < node->key) {
 					child_pos = j + 1;
-				} else if(!child->is_leaf) {
-					uint64_t max_key = btree_find_maximum(disk, cache, child->block_number);
+				} else if(!child.is_leaf) {
+					uint64_t max_key = btree_find_maximum(disk, cache, child.block_number);
 					if(max_key < node->key) {
 						child_pos = j + 1;
 					}
