@@ -127,6 +127,7 @@ void cache_fsync(DiskInterface* disk, cache *cache, uint64_t inum)
 			
 			// Remove from global dirty list
 			gdl_pop(cache, cache->cache[index].gdl_pos);
+			cache->cache[index].gdl_pos = NULL;
 		}
 		// Remove entire inode entry from dirty list
 		dl_delete(cache->dirty_list, inum);
